@@ -55,7 +55,7 @@ namespace invoice_task.API.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("CreateInvoice")]
         public IActionResult CreateInvoice([FromBody] Invoice invoice)
         {
             try
@@ -79,7 +79,7 @@ namespace invoice_task.API.Controllers
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("UpdateInvoice/{id}")]
         public IActionResult UpdateInvoice(int id, [FromBody] Invoice invoice)
         {
             try
@@ -105,7 +105,7 @@ namespace invoice_task.API.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteInvoice/{id}")]
         public IActionResult DeleteInvoice(int id)
         {
             try

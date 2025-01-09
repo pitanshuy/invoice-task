@@ -125,28 +125,71 @@ namespace invoice_task.Infrastructure.Repositories
 
         public void CreateInvoice(Invoice invoice)
         {
-            using (var connection = _dbHelper.GetConnection())
-            {
-                using (var command = new SqlCommand("INSERT INTO Invoices (Id, CustomerName, CustomerEmail, TotalAmount, Status, CreatedAt, UpdatedAt) VALUES (@Id, @CustomerName, @CustomerEmail, @TotalAmount, @Status, @CreatedAt, @UpdatedAt)", connection))
-                {
-                    command.Parameters.AddWithValue("@Id", invoice.Id);
-                    command.Parameters.AddWithValue("@CustomerName", invoice.CustomerName);
-                    command.Parameters.AddWithValue("@CustomerEmail", invoice.CustomerEmail);
-                    command.Parameters.AddWithValue("@TotalAmount", invoice.TotalAmount);
-                    command.Parameters.AddWithValue("@Status", (int)invoice.Status);
-                    command.Parameters.AddWithValue("@CreatedAt", invoice.CreatedAt);
-                    command.Parameters.AddWithValue("@UpdatedAt", invoice.UpdatedAt);
+            //using (var connection = _dbHelper.GetConnection())
+            //{
+            //    using (var command = new SqlCommand("INSERT INTO Invoices ( CustomerName, CustomerEmail, Amount, Status, CreatedAt, UpdatedAt) VALUES (s @CustomerName, @CustomerEmail, @TotalAmount, @Status, @CreatedAt, @UpdatedAt)", connection))
+            //    {
 
-                    command.ExecuteNonQuery();
+            //        command.Parameters.AddWithValue("@Id", invoice.Id);
+            //        command.Parameters.AddWithValue("@CustomerName", invoice.CustomerName);
+            //        command.Parameters.AddWithValue("@CustomerEmail", invoice.CustomerEmail);
+            //        command.Parameters.AddWithValue("@TotalAmount", invoice.TotalAmount);
+            //        command.Parameters.AddWithValue("@Status", (int)invoice.Status);
+            //        command.Parameters.AddWithValue("@CreatedAt", invoice.CreatedAt);
+            //        command.Parameters.AddWithValue("@UpdatedAt", invoice.UpdatedAt);
+
+            //        command.ExecuteNonQuery();
+            //    }
+            //}
+
+            try
+            {
+                using (var connection = _dbHelper.GetConnection())
+                {
+                    if (connection != null && connection.State == System.Data.ConnectionState.Open)
+                    {
+                        connection.Close();
+                    }
+                    connection.Open();
+
+                    using (var command = new SqlCommand("INSERT INTO Invoices (CustomerName, CustomerEmail, Amount, Status, CreatedAt, UpdatedAt) VALUES (@CustomerName, @CustomerEmail, @TotalAmount, @Status, @CreatedAt, @UpdatedAt)", connection))
+                    {
+                        command.Parameters.AddWithValue("@CustomerName", invoice.CustomerName);
+                        command.Parameters.AddWithValue("@CustomerEmail", invoice.CustomerEmail);
+                        command.Parameters.AddWithValue("@TotalAmount", invoice.TotalAmount);
+                        command.Parameters.AddWithValue("@Status", (int)invoice.Status);
+                        command.Parameters.AddWithValue("@CreatedAt", invoice.CreatedAt);
+                        command.Parameters.AddWithValue("@UpdatedAt", invoice.UpdatedAt);
+
+                        command.ExecuteNonQuery();
+                    }
                 }
             }
+            catch (SqlException sqlEx)
+            {
+                // Log the SQL exception
+                Console.WriteLine($"SQL Error: {sqlEx.Message}");
+                // Optionally rethrow or handle accordingly
+            }
+            catch (Exception ex)
+            {
+                // Log general exceptions
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                // Optionally rethrow or handle accordingly
+            }
+            finally
+            {
+                // Additional cleanup if necessary
+                Console.WriteLine("Operation completed, resources cleaned up.");
+            }
+
         }
 
         public void UpdateInvoice(Invoice invoice)
         {
             using (var connection = _dbHelper.GetConnection())
             {
-                using (var command = new SqlCommand("UPDATE Invoices SET CustomerName = @CustomerName, CustomerEmail = @CustomerEmail, TotalAmount = @TotalAmount, Status = @Status, UpdatedAt = @UpdatedAt WHERE Id = @Id", connection))
+                using (var command = new SqlCommand("UPDATE Invoices SET CustomerName = @CustomerName, CustomerEmail = @CustomerEmail, Amount = @TotalAmount, Status = @Status, UpdatedAt = @UpdatedAt WHERE Id = @Id", connection))
                 {
                     command.Parameters.AddWithValue("@Id", invoice.Id);
                     command.Parameters.AddWithValue("@CustomerName", invoice.CustomerName);
